@@ -1,0 +1,54 @@
+# +
+# Compiled
+# -
+*.pyc
+__pycache__
+.pytest_cache
+
+# +
+# backup(s)
+# -
+*.old
+
+# +
+# Packages
+# -
+*.dmg
+*.gz
+*.tar
+*.tgz
+*.zip
+
+# +
+# Logs
+# -
+*.log
+
+# +
+# Data
+# -
+*.fits
+*.fits.gz
+*.png
+*.jpg
+
+# +
+# Pycharm
+# -
+.idea
+
+# +
+# OS
+# -
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# +
+# secret stuff
+# -
+mmt_token.py
