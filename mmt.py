@@ -249,7 +249,8 @@ def upload_action(**kwargs):
 # +
 # action(s)
 # -
-HTTP_VERBS = {'DELETE': delete_action, 'GET': get_action, 'POST': post_action, 'PUT': put_action, 'UPLOAD': upload_action}
+HTTP_ACTIONS = {'DELETE': delete_action, 'GET': get_action, 'POST': post_action, 'PUT': put_action,
+                'UPLOAD': upload_action}
 
 
 # +
@@ -260,7 +261,7 @@ def mmt_target(action='GET', catalog_id=MMT_CATALOG_ID, file='', payload='',
                program_id=MMT_PROGRAM_ID, target_id=MMT_TARGET_ID, token=MMT_TOKEN, verbose=False):
 
     # set variable(s)
-    _action = HTTP_VERBS.get(action.upper(), None)
+    _action = HTTP_ACTIONS.get(action.upper(), None)
     _catalog_id = catalog_id if (isinstance(catalog_id, int) and catalog_id > 0) else MMT_CATALOG_ID
     _file = file if (isinstance(file, str) and file.strip() != '') else ''
     try:
@@ -286,7 +287,7 @@ if __name__ == '__main__':
     # noinspection PyTypeChecker
     _p = argparse.ArgumentParser(description=f'MMT Target Loader', formatter_class=argparse.RawTextHelpFormatter)
     _p.add_argument(f'--action', default='GET',
-                    help=f"""Verb, defaults to '%(default)s', choices: {list(HTTP_VERBS.keys())}""")
+                    help=f"""Action, defaults to '%(default)s', choices: {list(HTTP_ACTIONS.keys())}""")
     _p.add_argument(f'--catalog_id', default=MMT_CATALOG_ID, help=f"""Catalog ID, defaults to %(default)s""")
     _p.add_argument(f'--file', default='', help=f"""File, defaults to '%(default)s'""")
     _p.add_argument(f'--payload', default='{}', help=f"""Payload, defaults to %(default)s""")
