@@ -34,9 +34,6 @@ def delete_verb(**kwargs):
     target_id = kwargs['target_id'] if \
         ('target_id' in kwargs and isinstance(kwargs['target_id'], int) and kwargs['target_id'] > 0) \
         else MMT_TARGET_ID
-    url = kwargs['url'] if \
-        ('url' in kwargs and isinstance(kwargs['url'], str) and kwargs['url'].startswith('http')) \
-        else MMT_URL
     verbose = kwargs['verbose'] if \
         ('verbose' in kwargs and isinstance(kwargs['verbose'], bool)) \
         else False
@@ -48,16 +45,13 @@ def delete_verb(**kwargs):
     _data, _req = 'null', None
     try:
         if verbose:
-            print(f"{_isot}> delete_verb sends {_data} to {url}/{target_id}/")
-        _req = requests.delete(url=f'{url}/{target_id}')
+            print(f"{_isot}> delete_verb sends {_data} to {MMT_URL}/{target_id}/")
+        _req = requests.delete(url=f'{MMT_URL}/{target_id}')
     except:
         if verbose:
             print(f"failed to complete request, _req={_req}")
     else:
         parse_response(_req=_req, _verbose=verbose, _isot=_isot)
-
-    # pass-thru return
-    return
 
 
 # +
@@ -74,9 +68,6 @@ def get_verb(**kwargs):
     target_id = kwargs['target_id'] if \
         ('target_id' in kwargs and isinstance(kwargs['target_id'], int) and kwargs['target_id'] > 0) \
         else MMT_TARGET_ID
-    url = kwargs['url'] if \
-        ('url' in kwargs and isinstance(kwargs['url'], str) and kwargs['url'].startswith('http')) \
-        else MMT_URL
     verbose = kwargs['verbose'] if \
         ('verbose' in kwargs and isinstance(kwargs['verbose'], bool)) \
         else False
@@ -89,16 +80,13 @@ def get_verb(**kwargs):
     _data, _req = 'null', None
     try:
         if verbose:
-            print(f"{_isot}> get_verb sends {_data} to {url}/{target_id}/")
-        _req = requests.get(url=f'{url}/{target_id}')
+            print(f"{_isot}> get_verb sends {_data} to {MMT_URL}/{target_id}/")
+        _req = requests.get(url=f'{MMT_URL}/{target_id}')
     except:
         if verbose:
             print(f"failed to complete request, _req={_req}")
     else:
         parse_response(_req=_req, _verbose=verbose, _isot=_isot)
-
-    # pass-thru return
-    return None
 
 
 # +
@@ -127,9 +115,6 @@ def post_verb(**kwargs):
     token = kwargs['token'] if \
         ('token' in kwargs and isinstance(kwargs['token'], str) and kwargs['token'] != '') \
         else MMT_TOKEN
-    url = kwargs['url'] if \
-        ('url' in kwargs and isinstance(kwargs['url'], str) and kwargs['url'].startswith('http')) \
-        else MMT_URL
     verbose = kwargs['verbose'] if \
         ('verbose' in kwargs and isinstance(kwargs['verbose'], bool)) \
         else False
@@ -142,16 +127,13 @@ def post_verb(**kwargs):
     _data, _req = {**payload, **{'catalog_id': catalog_id, 'program_id': program_id, 'token': token}}, None
     try:
         if verbose:
-            print(f"{_isot}> post_verb sends {_data} to {url}/{target_id}/")
-        _req = requests.post(url=f'{url}/{target_id}', data=_data)
+            print(f"{_isot}> post_verb sends {_data} to {MMT_URL}/{target_id}/")
+        _req = requests.post(url=f'{MMT_URL}/{target_id}', data=_data)
     except:
         if verbose:
             print(f"failed to complete request, _req={_req}")
     else:
         parse_response(_req=_req, _verbose=verbose, _isot=_isot)
-
-    # pass-thru return
-    return None
 
 
 # +
@@ -180,9 +162,6 @@ def put_verb(**kwargs):
     token = kwargs['token'] if \
         ('token' in kwargs and isinstance(kwargs['token'], str) and kwargs['token'] != '') \
         else MMT_TOKEN
-    url = kwargs['url'] if \
-        ('url' in kwargs and isinstance(kwargs['url'], str) and kwargs['url'].startswith('http')) \
-        else MMT_URL
     verbose = kwargs['verbose'] if \
         ('verbose' in kwargs and isinstance(kwargs['verbose'], bool)) \
         else False
@@ -200,16 +179,13 @@ def put_verb(**kwargs):
     # execute
     try:
         if verbose:
-            print(f"{_isot}> put_verb sends {_data} to {url}/{target_id}/")
-        _req = requests.put(url=f'{url}/{target_id}/', data=_data)
+            print(f"{_isot}> put_verb sends {_data} to {MMT_URL}/{target_id}/")
+        _req = requests.put(url=f'{MMT_URL}/{target_id}/', data=_data)
     except:
         if verbose:
             print(f"failed to complete request, _req={_req}")
     else:
         parse_response(_req=_req, _verbose=verbose, _isot=_isot)
-
-    # pass-thru return
-    return None
 
 
 # +
@@ -238,9 +214,6 @@ def upload_verb(**kwargs):
     token = kwargs['token'] if \
         ('token' in kwargs and isinstance(kwargs['token'], str) and kwargs['token'] != '') \
         else MMT_TOKEN
-    url = kwargs['url'] if \
-        ('url' in kwargs and isinstance(kwargs['url'], str) and kwargs['url'].startswith('http')) \
-        else MMT_URL
     verbose = kwargs['verbose'] if \
         ('verbose' in kwargs and isinstance(kwargs['verbose'], bool)) \
         else False
@@ -263,17 +236,14 @@ def upload_verb(**kwargs):
                           {'finding_chart_file': _png}, None
     try:
         if verbose:
-            print(f"{_isot}> upload_verb sends {_data} to {url}/{target_id}")
-            print(f"{_isot}> upload_verb sends {_png} to {url}/{target_id}")
-        _req = requests.post(url=f'{url}/{target_id}', files=_files, data=_data)
+            print(f"{_isot}> upload_verb sends {_data} to {MMT_URL}/{target_id}")
+            print(f"{_isot}> upload_verb sends {_png} to {MMT_URL}/{target_id}")
+        _req = requests.post(url=f'{MMT_URL}/{target_id}', files=_files, data=_data)
     except Exception as _e:
         if verbose:
             print(f"failed to complete request, _req={_req}, error={_e}")
     else:
         parse_response(_req=_req, _verbose=verbose, _isot=_isot)
-
-    # pass-thru return
-    return None
 
 
 # +
@@ -305,8 +275,7 @@ def mmt_target(action='GET', catalog_id=MMT_CATALOG_ID, file='', payload='',
     # execute
     if _action is not None:
         _action(**{'action': action.upper(), 'catalog_id': _catalog_id, 'file': _file, 'payload': _payload,
-                   'program_id': _program_id, 'target_id': _target_id, 'token': _token, 'url': MMT_URL,
-                   'verbose': _verbose})
+                   'program_id': _program_id, 'target_id': _target_id, 'token': _token, 'verbose': _verbose})
 
 
 # +
