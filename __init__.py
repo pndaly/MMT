@@ -130,22 +130,22 @@ def verify_keys(_input=None, _keys=None):
 # -
 # noinspection PyBroadException
 def parse_response(_req=None, _verbose=False, _isot=get_isot()):
-
-    if _req is not None and hasattr(_req, 'status_code') and http_status(int(_req.status_code)) and \
-            _req.status_code == 200 and hasattr(_req, 'text'):
-
-        # read response back as json dictionary
-        try:
-            _json = json.loads(_req.text)
-        except:
-            _json = {}
-
-        # return response
-        if verify_keys(_json, MMT_JSON_KEYS):
-            if _verbose:
-                print(f"{_isot}> get_verb() returns (json) {_json}")
-            return _json
+    if _req is not None and hasattr(_req, 'status_code') and \
+            http_status(int(_req.status_code)) and hasattr(_req, 'text'):
+        if _req.status_code == 200:
+            try:
+                _json = json.loads(_req.text)
+            except:
+                _json = {}
+            if verify_keys(_json, MMT_JSON_KEYS):
+                if _verbose:
+                    print(f"{_isot}> received (json) {_json}")
+                return _json
+            else:
+                if _verbose:
+                    print(f"{_isot}> received (text) {_req.text}")
+                return _req.text
         else:
             if _verbose:
-                print(f"{_isot}> get_verb() returns (text) {_req.text}")
+                print(f"{_isot}> received (text) {_req.text}, status={_req.status_code}")
             return _req.text
