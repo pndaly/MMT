@@ -5,29 +5,29 @@
  - \<token\>: ?token=YOUR_SECRET_TOKEN
 
 ## Delete Target
-HTTP verb: DELETE, Route: \<base\>/\<target_id\>\<token\>
+HTTP action: DELETE, Route: \<base\>/\<target_id\>\<token\>
 
- % python3 mmt.py --action=DELETE --target_id=6221 --verbose
+ % python3 mmt.py --action=DELETE --target_id=6221 --actionose
 
 ## Get Target
-HTTP verb: GET, Route: \<base\>/\<target_id\>\<token\>
+HTTP action: GET, Route: \<base\>/\<target_id\>\<token\>
 
- % python3 mmt.py --action=DELETE --target_id=6221 --verbose
+ % python3 mmt.py --action=GET --target_id=6221 --actionose
 
 ## Create New Target
-HTTP verb: POST, Route: \<base\>/\<token\>
+HTTP action: POST, Route: \<base\>/\<token\>
 
-TBD
+TBD % python3 mmt.py --action=POST --actionose
 
 ## Update Target
-HTTP verb: PUT, Route: \<base\>/\<target_id\>\<token\>
+HTTP action: PUT, Route: \<base\>/\<target_id\>\<token\>
 
- % python3 mmt.py --action=PUT --payload='{"filter": "r", "visits": 3}' --target_id=6221 --verbose
+ % python3 mmt.py --action=PUT --payload='{"filter": "r", "visits": 3}' --target_id=6221 --actionose
 
 ## Upload Finding Chart
-HTTP verb: POST, Route: \<base\>/\<target_id\>\<token\>
+HTTP action: POST, Route: \<base\>/\<target_id\>\<token\>
 
- % python3 MMT.py --action=UPLOA' --target_id=6238 --file=M31.png --program_id=997 --catalog_id=486 --verbose
+ % python3 MMT.py --action=UPLOAD --target_id=6238 --file=M31.png --program_id=997 --catalog_id=486 --actionose
 
 --------------------------------------
 

@@ -4,7 +4,7 @@
 # +
 # import(s)
 # -
-from . import *
+from __init__ import *
 from mmt_token import MMT_TOKEN
 
 import argparse
@@ -20,10 +20,10 @@ __doc__ = """
 
 
 # +
-# function: delete_verb()
+# function: delete_action()
 # -
 # noinspection PyBroadException
-def delete_verb(**kwargs):
+def delete_action(**kwargs):
 
     # check input(s)
     if kwargs is None or not isinstance(kwargs, dict) or kwargs == {}:
@@ -39,13 +39,13 @@ def delete_verb(**kwargs):
         else False
 
     if verbose:
-        print(f"{_isot}> delete_verb(kwargs={kwargs})")
+        print(f"{_isot}> delete_action(kwargs={kwargs})")
 
     # execute
     _data, _req = 'null', None
     try:
         if verbose:
-            print(f"{_isot}> delete_verb sends {_data} to {MMT_URL}/{target_id}/")
+            print(f"{_isot}> delete_action() sends {_data} to {MMT_URL}/{target_id}/")
         _req = requests.delete(url=f'{MMT_URL}/{target_id}')
     except:
         if verbose:
@@ -55,10 +55,10 @@ def delete_verb(**kwargs):
 
 
 # +
-# function: get_verb()
+# function: get_action()
 # -
 # noinspection PyBroadException
-def get_verb(**kwargs):
+def get_action(**kwargs):
 
     # check input(s)
     if kwargs is None or not isinstance(kwargs, dict) or kwargs == {}:
@@ -74,13 +74,13 @@ def get_verb(**kwargs):
     _isot = get_isot()
 
     if verbose:
-        print(f"{_isot}> get_verb(kwargs={kwargs})")
+        print(f"{_isot}> get_action(kwargs={kwargs})")
 
     # execute
     _data, _req = 'null', None
     try:
         if verbose:
-            print(f"{_isot}> get_verb sends {_data} to {MMT_URL}/{target_id}/")
+            print(f"{_isot}> get_action() sends {_data} to {MMT_URL}/{target_id}/")
         _req = requests.get(url=f'{MMT_URL}/{target_id}')
     except:
         if verbose:
@@ -90,10 +90,10 @@ def get_verb(**kwargs):
 
 
 # +
-# function: post_verb()
+# function: post_action()
 # -
 # noinspection PyBroadException
-def post_verb(**kwargs):
+def post_action(**kwargs):
 
     # check input(s)
     if kwargs is None or not isinstance(kwargs, dict) or kwargs == {}:
@@ -121,13 +121,13 @@ def post_verb(**kwargs):
     _isot = get_isot()
 
     if verbose:
-        print(f"{_isot}> get_verb(kwargs={kwargs})")
+        print(f"{_isot}> get_action(kwargs={kwargs})")
 
     # execute
     _data, _req = {**payload, **{'catalog_id': catalog_id, 'program_id': program_id, 'token': token}}, None
     try:
         if verbose:
-            print(f"{_isot}> post_verb sends {_data} to {MMT_URL}/{target_id}/")
+            print(f"{_isot}> post_action() sends {_data} to {MMT_URL}/{target_id}/")
         _req = requests.post(url=f'{MMT_URL}/{target_id}', data=_data)
     except:
         if verbose:
@@ -137,10 +137,10 @@ def post_verb(**kwargs):
 
 
 # +
-# function: put_verb()
+# function: put_action()
 # -
 # noinspection PyBroadException
-def put_verb(**kwargs):
+def put_action(**kwargs):
 
     # check input(s)
     if kwargs is None or not isinstance(kwargs, dict) or kwargs == {}:
@@ -168,7 +168,7 @@ def put_verb(**kwargs):
     _isot = get_isot()
 
     if verbose:
-        print(f"{_isot}> put_verb(kwargs={kwargs})")
+        print(f"{_isot}> put_action(kwargs={kwargs})")
 
     # change _new['mask'] to _new['maskid']
     _data, _req = {**payload, **{'catalog_id': catalog_id, 'program_id': program_id, 'token': token}}, None
@@ -179,7 +179,7 @@ def put_verb(**kwargs):
     # execute
     try:
         if verbose:
-            print(f"{_isot}> put_verb sends {_data} to {MMT_URL}/{target_id}/")
+            print(f"{_isot}> put_action() sends {_data} to {MMT_URL}/{target_id}/")
         _req = requests.put(url=f'{MMT_URL}/{target_id}/', data=_data)
     except:
         if verbose:
@@ -189,10 +189,10 @@ def put_verb(**kwargs):
 
 
 # +
-# function: upload_verb()
+# function: upload_action()
 # -
 # noinspection PyBroadException
-def upload_verb(**kwargs):
+def upload_action(**kwargs):
 
     # check input(s)
     if kwargs is None or not isinstance(kwargs, dict) or kwargs == {}:
@@ -220,7 +220,7 @@ def upload_verb(**kwargs):
     _isot = get_isot()
 
     if verbose:
-        print(f"{_isot}> upload_verb(kwargs={kwargs})")
+        print(f"{_isot}> upload_action(kwargs={kwargs})")
 
     # convert to png (if required)
     _png = None
@@ -236,8 +236,8 @@ def upload_verb(**kwargs):
                           {'finding_chart_file': _png}, None
     try:
         if verbose:
-            print(f"{_isot}> upload_verb sends {_data} to {MMT_URL}/{target_id}")
-            print(f"{_isot}> upload_verb sends {_png} to {MMT_URL}/{target_id}")
+            print(f"{_isot}> upload_action() sends {_data} to {MMT_URL}/{target_id}")
+            print(f"{_isot}> upload_action() sends {_png} to {MMT_URL}/{target_id}")
         _req = requests.post(url=f'{MMT_URL}/{target_id}', files=_files, data=_data)
     except Exception as _e:
         if verbose:
@@ -249,7 +249,7 @@ def upload_verb(**kwargs):
 # +
 # action(s)
 # -
-HTTP_ACTIONS = {'DELETE': delete_verb, 'GET': get_verb, 'POST': post_verb, 'PUT': put_verb, 'UPLOAD': upload_verb}
+HTTP_VERBS = {'DELETE': delete_action, 'GET': get_action, 'POST': post_action, 'PUT': put_action, 'UPLOAD': upload_action}
 
 
 # +
@@ -260,7 +260,7 @@ def mmt_target(action='GET', catalog_id=MMT_CATALOG_ID, file='', payload='',
                program_id=MMT_PROGRAM_ID, target_id=MMT_TARGET_ID, token=MMT_TOKEN, verbose=False):
 
     # set variable(s)
-    _action = HTTP_ACTIONS.get(action.upper(), None)
+    _action = HTTP_VERBS.get(action.upper(), None)
     _catalog_id = catalog_id if (isinstance(catalog_id, int) and catalog_id > 0) else MMT_CATALOG_ID
     _file = file if (isinstance(file, str) and file.strip() != '') else ''
     try:
@@ -286,7 +286,7 @@ if __name__ == '__main__':
     # noinspection PyTypeChecker
     _p = argparse.ArgumentParser(description=f'MMT Target Loader', formatter_class=argparse.RawTextHelpFormatter)
     _p.add_argument(f'--action', default='GET',
-                    help=f"""Action, defaults to '%(default)s', choices: {list(HTTP_ACTIONS.keys())}""")
+                    help=f"""Verb, defaults to '%(default)s', choices: {list(HTTP_VERBS.keys())}""")
     _p.add_argument(f'--catalog_id', default=MMT_CATALOG_ID, help=f"""Catalog ID, defaults to %(default)s""")
     _p.add_argument(f'--file', default='', help=f"""File, defaults to '%(default)s'""")
     _p.add_argument(f'--payload', default='{}', help=f"""Payload, defaults to %(default)s""")
