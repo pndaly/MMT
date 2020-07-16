@@ -4,13 +4,16 @@
 # +
 # import(s)
 # -
+from astropy.coordinates import Angle
 from astropy.io import fits
 from datetime import datetime
 from datetime import timedelta
 from PIL import Image
 
 import json
+import math
 import os
+import requests
 
 
 # +
@@ -40,6 +43,7 @@ HTTP_CODES = {100: "Continue", 101: "Switching Protocols", 102: "Processing (Web
               509: "Bandwidth Limit Exceeded (Apache)", 510: "Not Extended", 511: "Network Authentication Required"}
 HTTP_MAX_CODE = max([int(_k) for _k in HTTP_CODES])
 HTTP_MIN_CODE = min([int(_k) for _k in HTTP_CODES])
+
 MMT_CATALOG_ID = 486
 MMT_PROGRAM_ID = -1
 MMT_TARGET_ID = -1
@@ -51,7 +55,10 @@ MMT_JSON_KEYS = ("id", "ra", "objectid", "observationtype", "moon", "seeing", "p
                  "instrumentid", "targetofopportunity", "reduced", "exposuretimeremaining", "totallength",
                  "totallengthformatted", "exposuretimeremainingformatted", "exposuretimecompleted",
                  "percentcompleted", "offsetstars", "details", "mask")
+MMT_NULL_IMAGING = {_k: "None" for _k in MMT_JSON_KEYS}
 MMT_URL = 'https://scheduler.mmto.arizona.edu/APIv2/catalogTarget'
+
+SDSS_URL = 'http://skyserver.sdss.org/dr16/SkyServerWS/ImgCutout/getjpeg'
 
 
 # +
@@ -63,6 +70,32 @@ def get_isot(ndays=0):
         return (datetime.utcnow() + timedelta(days=ndays)).isoformat()
     except:
         return None
+
+
+# +
+# function: ra_to_decimal()
+# -
+# noinspection PyBroadException
+def ra_to_decimal(ra='22:35:57.6 hours'):
+    """ return RA H:M:S as a decimal """
+    try:
+        ra = f'{ra} hours' if 'hours' not in ra.lower() else ra
+        return float(Angle(ra).degree)
+    except:
+        return math.nan
+
+
+# +
+# function: dec_to_decimal()
+# -
+# noinspection PyBroadException,PyPep8
+def dec_to_decimal(dec='33:57:56.0 degrees'):
+    """ return Dec d:m:s as a decimal """
+    try:
+        dec = f'{dec} degrees' if 'degrees' not in dec.lower() else dec
+        return float(Angle(dec).degree)
+    except:
+        return math.nan
 
 
 # +
@@ -101,6 +134,44 @@ def fits_to_png(fits_file='', verbose=False):
         _img = Image.fromarray(_data)
         _img.save(_png_path)
         return _png_path
+
+
+# +
+# function: get_finder_chart()
+# -
+# noinspection PyBroadException
+def get_finder_chart(**kw):
+
+    # get input(s)
+    _ra = kw['ra'] if ('ra' in kw and isinstance(kw['ra'], str) and kw['ra'].strip != '') else '22:35:57.6'
+    _ra_str = _ra.replace('.', '').replace(':', '').replace(' ', '').strip()[:6]
+    _dec = kw['dec'] if ('dec' in kw and isinstance(kw['dec'], str) and kw['dec'].strip != '') else '33:57:56.0'
+    _dec_str = _dec.replace('.', '').replace(':', '').replace(' ', '').strip()[:6]
+    _scale = kw['scale'] if ('scale' in kw and isinstance(kw['scale'], float) and kw['scale'].strip != '') else 0.79224
+    _width = kw['width'] if ('width' in kw and isinstance(kw['width'], int) and kw['width'].strip != '') else 400
+    _height = kw['height'] if ('height' in kw and isinstance(kw['height'], int) and kw['height'].strip != '') else 400
+    _opt = kw['opt'] if ('opt' in kw and isinstance(kw['opt'], str) and kw['opt'].strip != '') else 'GL'
+    _query = kw['query'] if ('query' in kw and isinstance(kw['query'], str) and kw['query'].strip != '') else ''
+    _jpg = kw['jpg'] if ('jpg' in kw and isinstance(kw['jpg'], str) and kw['jpg'].strip != '') else \
+        f'sdss_{_ra_str}_{_dec_str}.jpg'
+
+    # request data
+    _url, _req = f"{SDSS_URL}?ra={ra_to_decimal(_ra)}&dec={dec_to_decimal(_dec)}&scale={_scale}&" \
+           f"width={_width}&height={_height}&opt={_opt}&query={_query}", None
+    try:
+        _req = requests.get(url=f'{_url}')
+    except Exception as _e:
+        print(f"failed to complete request, _req={_req}, error={_e}")
+    else:
+        # if everything is ok, create the jpg image
+        if _req is not None and hasattr(_req, 'status_code') and http_status(int(_req.status_code)) and \
+                _req.status_code == 200 and hasattr(_req, 'content'):
+            try:
+                with open(_jpg, 'wb') as _f:
+                    _f.write(_req.content)
+                return os.path.abspath(os.path.expanduser(_jpg))
+            except:
+                return ''
 
 
 # +

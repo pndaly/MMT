@@ -51,7 +51,7 @@ def delete_action(**kwargs):
         if verbose:
             print(f"failed to complete request, _req={_req}")
     else:
-        parse_response(_req=_req, _verbose=verbose, _isot=_isot)
+        return parse_response(_req=_req, _verbose=verbose, _isot=_isot)
 
 
 # +
@@ -86,7 +86,7 @@ def get_action(**kwargs):
         if verbose:
             print(f"failed to complete request, _req={_req}")
     else:
-        parse_response(_req=_req, _verbose=verbose, _isot=_isot)
+        return parse_response(_req=_req, _verbose=verbose, _isot=_isot)
 
 
 # +
@@ -109,9 +109,6 @@ def post_action(**kwargs):
     program_id = kwargs['program_id'] if \
         ('program_id' in kwargs and isinstance(kwargs['program_id'], int) and kwargs['program_id'] > 0) \
         else MMT_PROGRAM_ID
-    target_id = kwargs['target_id'] if \
-        ('target_id' in kwargs and isinstance(kwargs['target_id'], int) and kwargs['target_id'] > 0) \
-        else MMT_TARGET_ID
     token = kwargs['token'] if \
         ('token' in kwargs and isinstance(kwargs['token'], str) and kwargs['token'] != '') \
         else MMT_TOKEN
@@ -121,19 +118,31 @@ def post_action(**kwargs):
     _isot = get_isot()
 
     if verbose:
-        print(f"{_isot}> get_action(kwargs={kwargs})")
+        print(f"{_isot}> post_action(kwargs={kwargs})")
+
+    # (re)set variable(s)
+    try:
+        payload['ra_decimal'] = ra_to_decimal(payload['ra'])
+        payload['dec_decimal'] = dec_to_decimal(payload['dec'])
+        payload['submitted'] = get_isot().replace('T', ' ')
+        payload['modified'] = get_isot().replace('T', ' ')
+    except:
+        pass
 
     # execute
-    _data, _req = {**payload, **{'catalog_id': catalog_id, 'program_id': program_id, 'token': token}}, None
-    try:
-        if verbose:
-            print(f"{_isot}> post_action() sends {_data} to {MMT_URL}/{target_id}/")
-        _req = requests.post(url=f'{MMT_URL}/{target_id}', data=_data)
-    except:
-        if verbose:
-            print(f"failed to complete request, _req={_req}")
-    else:
-        parse_response(_req=_req, _verbose=verbose, _isot=_isot)
+    _data, _req = {**MMT_NULL_IMAGING, **payload}, None
+    if verify_keys(_data, MMT_JSON_KEYS):
+        _data.pop('id', None)
+        _data = {**_data, **{'catalog_id': catalog_id, 'program_id': program_id, 'token': token}}
+        try:
+            if verbose:
+                print(f"{_isot}> post_action() sends {_data} to {MMT_URL}/?token={token}")
+            _req = requests.post(url=f'{MMT_URL}/?{token}', data=_data)
+        except:
+            if verbose:
+                print(f"failed to complete request, _req={_req}")
+        else:
+            return parse_response(_req=_req, _verbose=verbose, _isot=_isot)
 
 
 # +
@@ -185,7 +194,7 @@ def put_action(**kwargs):
         if verbose:
             print(f"failed to complete request, _req={_req}")
     else:
-        parse_response(_req=_req, _verbose=verbose, _isot=_isot)
+        return parse_response(_req=_req, _verbose=verbose, _isot=_isot)
 
 
 # +
@@ -222,28 +231,35 @@ def upload_action(**kwargs):
     if verbose:
         print(f"{_isot}> upload_action(kwargs={kwargs})")
 
+    # if file is not specific, use SDSS
+    if file == '':
+        _json = get_action(**{'target_id': target_id})
+        _ra, _dec = _json['ra'], _json['dec']
+        _ra_str = _ra.replace('.', '').replace(':', '').replace(' ', '').strip()[:6]
+        _dec_str = _dec.replace('.', '').replace(':', '').replace(' ', '').strip()[:6]
+        file = get_finder_chart(**{'ra': _ra, 'dec': _dec, 'jpg': f'sdss_{_ra_str}_{_dec_str}.jpg'})
+
     # convert to png (if required)
-    _png = None
     if file.endswith('fits') or file.endswith('fits.gz'):
-        _png = fits_to_png(file, verbose)
-        _png = open(_png, 'rb')
-    elif file.endswith('png') or file.endswith('jpg'):
-        _png = open(file, 'rb')
+        file = fits_to_png(file, verbose)
+
+    # open for web
+    _img = open(file, 'rb')
 
     # execute
     _data, _files, _req = {'type': 'finding_chart', 'token': token, 'catalog_id': str(catalog_id),
                            'program_id': str(program_id), 'target_id': str(target_id)}, \
-                          {'finding_chart_file': _png}, None
+                          {'finding_chart_file': _img}, None
     try:
         if verbose:
             print(f"{_isot}> upload_action() sends {_data} to {MMT_URL}/{target_id}")
-            print(f"{_isot}> upload_action() sends {_png} to {MMT_URL}/{target_id}")
+            print(f"{_isot}> upload_action() sends {_img} to {MMT_URL}/{target_id}")
         _req = requests.post(url=f'{MMT_URL}/{target_id}', files=_files, data=_data)
     except Exception as _e:
         if verbose:
             print(f"failed to complete request, _req={_req}, error={_e}")
     else:
-        parse_response(_req=_req, _verbose=verbose, _isot=_isot)
+        return parse_response(_req=_req, _verbose=verbose, _isot=_isot)
 
 
 # +
@@ -264,10 +280,10 @@ def mmt_target(action='GET', catalog_id=MMT_CATALOG_ID, file='', payload='',
     _action = HTTP_ACTIONS.get(action.upper(), None)
     _catalog_id = catalog_id if (isinstance(catalog_id, int) and catalog_id > 0) else MMT_CATALOG_ID
     _file = file if (isinstance(file, str) and file.strip() != '') else ''
-    try:
-        _payload = json.loads(payload)
-    except:
-        _payload = {}
+    # try:
+    _payload = json.loads(payload)
+    # except:
+    #     _payload = {}
     _program_id = program_id if (isinstance(program_id, int) and program_id > 0) else MMT_PROGRAM_ID
     _target_id = target_id if (isinstance(target_id, int) and target_id > 0) else MMT_TARGET_ID
     _token = token if (isinstance(token, str) and token.strip() != '') else MMT_TOKEN
