@@ -45,7 +45,7 @@ HTTP_MAX_CODE = max([int(_k) for _k in HTTP_CODES])
 HTTP_MIN_CODE = min([int(_k) for _k in HTTP_CODES])
 
 MMT_CATALOG_ID = 486
-MMT_PROGRAM_ID = -1
+MMT_PROGRAM_ID = 977
 MMT_TARGET_ID = -1
 MMT_JSON_KEYS = ("id", "ra", "objectid", "observationtype", "moon", "seeing", "photometric", "priority", "dec",
                  "ra_decimal", "dec_decimal", "pm_ra", "pm_dec", "magnitude", "exposuretime", "numberexposures",
@@ -55,7 +55,7 @@ MMT_JSON_KEYS = ("id", "ra", "objectid", "observationtype", "moon", "seeing", "p
                  "instrumentid", "targetofopportunity", "reduced", "exposuretimeremaining", "totallength",
                  "totallengthformatted", "exposuretimeremainingformatted", "exposuretimecompleted",
                  "percentcompleted", "offsetstars", "details", "mask")
-MMT_NULL_IMAGING = {_k: "None" for _k in MMT_JSON_KEYS}
+MMT_NULL_IMAGING = {_k: None for _k in MMT_JSON_KEYS}
 MMT_URL = 'https://scheduler.mmto.arizona.edu/APIv2/catalogTarget'
 
 SDSS_URL = 'http://skyserver.sdss.org/dr16/SkyServerWS/ImgCutout/getjpeg'
@@ -146,7 +146,7 @@ def get_finder_chart(**kw):
     _ra = kw['ra'] if ('ra' in kw and isinstance(kw['ra'], str) and kw['ra'].strip != '') else '22:35:57.6'
     _ra_str = _ra.replace('.', '').replace(':', '').replace(' ', '').strip()[:6]
     _dec = kw['dec'] if ('dec' in kw and isinstance(kw['dec'], str) and kw['dec'].strip != '') else '33:57:56.0'
-    _dec_str = _dec.replace('.', '').replace(':', '').replace(' ', '').strip()[:6]
+    _dec_str = _dec.replace('.', '').replace(':', '').replace(' ', '').replace('-', '').replace('+', '').strip()[:6]
     _scale = kw['scale'] if ('scale' in kw and isinstance(kw['scale'], float) and kw['scale'].strip != '') else 0.79224
     _width = kw['width'] if ('width' in kw and isinstance(kw['width'], int) and kw['width'].strip != '') else 400
     _height = kw['height'] if ('height' in kw and isinstance(kw['height'], int) and kw['height'].strip != '') else 400

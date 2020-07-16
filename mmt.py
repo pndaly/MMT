@@ -120,24 +120,36 @@ def post_action(**kwargs):
     if verbose:
         print(f"{_isot}> post_action(kwargs={kwargs})")
 
-    # (re)set variable(s)
-    try:
-        payload['ra_decimal'] = ra_to_decimal(payload['ra'])
-        payload['dec_decimal'] = dec_to_decimal(payload['dec'])
-        payload['submitted'] = get_isot().replace('T', ' ')
-        payload['modified'] = get_isot().replace('T', ' ')
-    except:
-        pass
-
     # execute
     _data, _req = {**MMT_NULL_IMAGING, **payload}, None
+    if verbose:
+        print(f"{_isot}> _data={_data})")
     if verify_keys(_data, MMT_JSON_KEYS):
+
+        # add variable(s)
+        _data['ra_decimal'] = ra_to_decimal(_data['ra'])
+        _data['dec_decimal'] = dec_to_decimal(_data['dec'])
+        _data['submitted'] = get_isot().replace('T', ' ')
+        _data['modified'] = get_isot().replace('T', ' ')
+
+        if _data['findingchartfilename'] is None or _data['findingchartfilename'].strip() == '' or \
+                not os.path.abspath(os.path.expanduser(_data['findingchartfilename'])):
+            _data['findingchartfilename'] = get_finder_chart(**{'ra': _data['ra'], 'dec': _data['dec']})
+        _data['findingchartfilename'] = os.path.basename(_data['findingchartfilename'])
+        _data['image'] = open(_data['findingchartfilename'], 'rb')
+        _data['files'] = {'finding_chart_file': _data['image']}
+        _data['type'] = 'finding_chart'
+
         _data.pop('id', None)
+        _v = _data.pop('mask', None)
+        if isinstance(_v, dict) and 'id' in _v and 'maskid' not in _data:
+            _data['maskid'] = _v['id']
+
         _data = {**_data, **{'catalog_id': catalog_id, 'program_id': program_id, 'token': token}}
         try:
             if verbose:
                 print(f"{_isot}> post_action() sends {_data} to {MMT_URL}/?token={token}")
-            _req = requests.post(url=f'{MMT_URL}/?{token}', data=_data)
+            _req = requests.post(url=f'{MMT_URL}/?{token}', files=_data['files'], data=_data)
         except:
             if verbose:
                 print(f"failed to complete request, _req={_req}")
