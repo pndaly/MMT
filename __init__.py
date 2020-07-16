@@ -157,7 +157,7 @@ def get_finder_chart(**kw):
 
     # request data
     _url, _req = f"{SDSS_URL}?ra={ra_to_decimal(_ra)}&dec={dec_to_decimal(_dec)}&scale={_scale}&" \
-           f"width={_width}&height={_height}&opt={_opt}&query={_query}", None
+                 f"width={_width}&height={_height}&opt={_opt}&query={_query}", None
     try:
         _req = requests.get(url=f'{_url}')
     except Exception as _e:

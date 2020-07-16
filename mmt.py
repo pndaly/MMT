@@ -292,10 +292,10 @@ def mmt_target(action='GET', catalog_id=MMT_CATALOG_ID, file='', payload='',
     _action = HTTP_ACTIONS.get(action.upper(), None)
     _catalog_id = catalog_id if (isinstance(catalog_id, int) and catalog_id > 0) else MMT_CATALOG_ID
     _file = file if (isinstance(file, str) and file.strip() != '') else ''
-    # try:
-    _payload = json.loads(payload)
-    # except:
-    #     _payload = {}
+    try:
+        _payload = json.loads(payload)
+    except:
+        _payload = {}
     _program_id = program_id if (isinstance(program_id, int) and program_id > 0) else MMT_PROGRAM_ID
     _target_id = target_id if (isinstance(target_id, int) and target_id > 0) else MMT_TARGET_ID
     _token = token if (isinstance(token, str) and token.strip() != '') else MMT_TOKEN
