@@ -142,10 +142,16 @@ def fits_to_png(fits_file='', verbose=False):
 # noinspection PyBroadException
 def get_finder_chart(**kw):
 
-    # get input(s)
-    _ra = kw['ra'] if ('ra' in kw and isinstance(kw['ra'], str) and kw['ra'].strip != '') else '22:35:57.6'
+    # get critical input(s): RA, Dec
+    try:
+        _ra = kw['ra']
+        _dec = kw['dec']
+    except Exception as _v:
+        print(f"invalid input(s), error={_v}")
+        return ''
+
+    # set default(s) [NB: plate scale default is 2x the SDSS value]
     _ra_str = _ra.replace('.', '').replace(':', '').replace(' ', '').strip()[:6]
-    _dec = kw['dec'] if ('dec' in kw and isinstance(kw['dec'], str) and kw['dec'].strip != '') else '33:57:56.0'
     _dec_str = _dec.replace('.', '').replace(':', '').replace(' ', '').replace('-', '').replace('+', '').strip()[:6]
     _scale = kw['scale'] if ('scale' in kw and isinstance(kw['scale'], float) and kw['scale'].strip != '') else 0.79224
     _width = kw['width'] if ('width' in kw and isinstance(kw['width'], int) and kw['width'].strip != '') else 400
@@ -162,16 +168,16 @@ def get_finder_chart(**kw):
         _req = requests.get(url=f'{_url}')
     except Exception as _e:
         print(f"failed to complete request, _req={_req}, error={_e}")
-    else:
-        # if everything is ok, create the jpg image
-        if _req is not None and hasattr(_req, 'status_code') and http_status(int(_req.status_code)) and \
-                _req.status_code == 200 and hasattr(_req, 'content'):
-            try:
-                with open(_jpg, 'wb') as _f:
-                    _f.write(_req.content)
-                return os.path.abspath(os.path.expanduser(_jpg))
-            except:
-                return ''
+        return ''
+
+    # if everything is ok, create the jpg image and return the path
+    if _req is not None and hasattr(_req, 'status_code') and _req.status_code == 200 and hasattr(_req, 'content'):
+        try:
+            with open(_jpg, 'wb') as _f:
+                _f.write(_req.content)
+            return os.path.abspath(os.path.expanduser(_jpg))
+        except:
+            return ''
 
 
 # +

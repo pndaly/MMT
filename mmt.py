@@ -30,13 +30,13 @@ def delete_action(**kwargs):
         return
 
     # set variable(s)
-    _isot = get_isot()
     target_id = kwargs['target_id'] if \
         ('target_id' in kwargs and isinstance(kwargs['target_id'], int) and kwargs['target_id'] > 0) \
         else MMT_TARGET_ID
     verbose = kwargs['verbose'] if \
         ('verbose' in kwargs and isinstance(kwargs['verbose'], bool)) \
         else False
+    _isot = get_isot()
 
     if verbose:
         print(f"{_isot}> delete_action(kwargs={kwargs})")
@@ -243,19 +243,16 @@ def upload_action(**kwargs):
     if verbose:
         print(f"{_isot}> upload_action(kwargs={kwargs})")
 
-    # if file is not specific, use SDSS
+    # if file is not specified, use SDSS
     if file == '':
         _json = get_action(**{'target_id': target_id})
         _ra, _dec = _json['ra'], _json['dec']
-        _ra_str = _ra.replace('.', '').replace(':', '').replace(' ', '').strip()[:6]
-        _dec_str = _dec.replace('.', '').replace(':', '').replace(' ', '').strip()[:6]
-        file = get_finder_chart(**{'ra': _ra, 'dec': _dec, 'jpg': f'sdss_{_ra_str}_{_dec_str}.jpg'})
+        file = get_finder_chart(**{'ra': _ra, 'dec': _dec})
 
     # convert to png (if required)
-    if file.endswith('fits') or file.endswith('fits.gz'):
+    elif file.endswith('fits') or file.endswith('fits.gz'):
         file = fits_to_png(file, verbose)
 
-    # open for web
     _img = open(file, 'rb')
 
     # execute
