@@ -1,5 +1,9 @@
 # MMT Target of Opportunity
 
+```bash
+ % source <mmt-code-path>/etc/MMT.sh <mmt-code-path>
+ ```
+
  - \<base\>: https://scheduler.mmto.arizona.edu/APIv2/catalogTarget/
 
  - \<token\>: ?token=YOUR_SECRET_TOKEN

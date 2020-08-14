@@ -4,8 +4,8 @@
 # +
 # import(s)
 # -
-from __init__ import *
-from mmt_token import MMT_TOKEN
+from src import *
+from src.mmt_token import *
 
 import argparse
 import requests
@@ -33,25 +33,23 @@ def delete_action(**kwargs):
     target_id = kwargs['target_id'] if \
         ('target_id' in kwargs and isinstance(kwargs['target_id'], int) and kwargs['target_id'] > 0) \
         else MMT_TARGET_ID
-    verbose = kwargs['verbose'] if \
-        ('verbose' in kwargs and isinstance(kwargs['verbose'], bool)) \
-        else False
-    _isot = get_isot()
 
-    if verbose:
-        print(f"{_isot}> delete_action(kwargs={kwargs})")
+    # get logger
+    log = kwargs['log'] if ('log' in kwargs and isinstance(kwargs['log'], logging.Logger)) else None
+    if log:
+        log.info(f"delete_action(kwargs={kwargs})")
 
     # execute
     _data, _req = 'null', None
+    if log:
+        log.info(f"sending {_data} to {MMT_URL}/{target_id}/")
     try:
-        if verbose:
-            print(f"{_isot}> delete_action() sends {_data} to {MMT_URL}/{target_id}/")
         _req = requests.delete(url=f'{MMT_URL}/{target_id}')
-    except:
-        if verbose:
-            print(f"failed to complete request, _req={_req}")
+    except Exception as _e:
+        if log:
+            log.error(f"failed to complete DELETE request, _req={_req}, error={_e}")
     else:
-        return parse_response(_req=_req, _verbose=verbose, _isot=_isot)
+        return parse_response(_req=_req, _log=log)
 
 
 # +
@@ -68,25 +66,23 @@ def get_action(**kwargs):
     target_id = kwargs['target_id'] if \
         ('target_id' in kwargs and isinstance(kwargs['target_id'], int) and kwargs['target_id'] > 0) \
         else MMT_TARGET_ID
-    verbose = kwargs['verbose'] if \
-        ('verbose' in kwargs and isinstance(kwargs['verbose'], bool)) \
-        else False
-    _isot = get_isot()
 
-    if verbose:
-        print(f"{_isot}> get_action(kwargs={kwargs})")
+    # get logger
+    log = kwargs['log'] if ('log' in kwargs and isinstance(kwargs['log'], logging.Logger)) else None
+    if log:
+        log.info(f"get_action(kwargs={kwargs})")
 
     # execute
     _data, _req = 'null', None
+    if log:
+        log.info(f"sending {_data} to {MMT_URL}/{target_id}/")
     try:
-        if verbose:
-            print(f"{_isot}> get_action() sends {_data} to {MMT_URL}/{target_id}/")
         _req = requests.get(url=f'{MMT_URL}/{target_id}')
-    except:
-        if verbose:
-            print(f"failed to complete request, _req={_req}")
+    except Exception as _e:
+        if log:
+            log.error(f"failed to complete GET request, _req={_req}, error={_e}")
     else:
-        return parse_response(_req=_req, _verbose=verbose, _isot=_isot)
+        return parse_response(_req=_req, _log=log)
 
 
 # +
@@ -112,18 +108,16 @@ def post_action(**kwargs):
     token = kwargs['token'] if \
         ('token' in kwargs and isinstance(kwargs['token'], str) and kwargs['token'] != '') \
         else MMT_TOKEN
-    verbose = kwargs['verbose'] if \
-        ('verbose' in kwargs and isinstance(kwargs['verbose'], bool)) \
-        else False
-    _isot = get_isot()
 
-    if verbose:
-        print(f"{_isot}> post_action(kwargs={kwargs})")
+    # get logger
+    log = kwargs['log'] if ('log' in kwargs and isinstance(kwargs['log'], logging.Logger)) else None
+    if log:
+        log.info(f"post_action(kwargs={kwargs})")
 
     # execute
     _data, _req = {**MMT_NULL_IMAGING, **payload}, None
-    if verbose:
-        print(f"{_isot}> _data={_data})")
+    if log:
+        log.info(f"_data={_data})")
     if verify_keys(_data, MMT_JSON_KEYS):
 
         # add variable(s)
@@ -146,15 +140,15 @@ def post_action(**kwargs):
             _data['maskid'] = _v['id']
 
         _data = {**_data, **{'catalog_id': catalog_id, 'program_id': program_id, 'token': token}}
+        if log:
+            log.info(f"sending {_data} to {MMT_URL}/?token={token}")
         try:
-            if verbose:
-                print(f"{_isot}> post_action() sends {_data} to {MMT_URL}/?token={token}")
             _req = requests.post(url=f'{MMT_URL}/?{token}', files=_data['files'], data=_data)
-        except:
-            if verbose:
-                print(f"failed to complete request, _req={_req}")
+        except Exception as _e:
+            if log:
+                log.error(f"failed to complete POST request, _req={_req}, error={_e}")
         else:
-            return parse_response(_req=_req, _verbose=verbose, _isot=_isot)
+            return parse_response(_req=_req, _log=log)
 
 
 # +
@@ -183,13 +177,11 @@ def put_action(**kwargs):
     token = kwargs['token'] if \
         ('token' in kwargs and isinstance(kwargs['token'], str) and kwargs['token'] != '') \
         else MMT_TOKEN
-    verbose = kwargs['verbose'] if \
-        ('verbose' in kwargs and isinstance(kwargs['verbose'], bool)) \
-        else False
-    _isot = get_isot()
 
-    if verbose:
-        print(f"{_isot}> put_action(kwargs={kwargs})")
+    # get logger
+    log = kwargs['log'] if ('log' in kwargs and isinstance(kwargs['log'], logging.Logger)) else None
+    if log:
+        log.info(f"put_action(kwargs={kwargs})")
 
     # change _new['mask'] to _new['maskid']
     _data, _req = {**payload, **{'catalog_id': catalog_id, 'program_id': program_id, 'token': token}}, None
@@ -198,15 +190,15 @@ def put_action(**kwargs):
         _data['maskid'] = _v['id']
 
     # execute
+    if log:
+        log.info(f"sending {_data} to {MMT_URL}/{target_id}/")
     try:
-        if verbose:
-            print(f"{_isot}> put_action() sends {_data} to {MMT_URL}/{target_id}/")
         _req = requests.put(url=f'{MMT_URL}/{target_id}/', data=_data)
-    except:
-        if verbose:
-            print(f"failed to complete request, _req={_req}")
+    except Exception as _e:
+        if log:
+            log.error(f"failed to complete PUT request, _req={_req}, error={_e}")
     else:
-        return parse_response(_req=_req, _verbose=verbose, _isot=_isot)
+        return parse_response(_req=_req, _log=log)
 
 
 # +
@@ -235,40 +227,39 @@ def upload_action(**kwargs):
     token = kwargs['token'] if \
         ('token' in kwargs and isinstance(kwargs['token'], str) and kwargs['token'] != '') \
         else MMT_TOKEN
-    verbose = kwargs['verbose'] if \
-        ('verbose' in kwargs and isinstance(kwargs['verbose'], bool)) \
-        else False
-    _isot = get_isot()
 
-    if verbose:
-        print(f"{_isot}> upload_action(kwargs={kwargs})")
+    # get logger
+    log = kwargs['log'] if ('log' in kwargs and isinstance(kwargs['log'], logging.Logger)) else None
+    if log:
+        log.info(f"upload_action(kwargs={kwargs})")
 
     # if file is not specified, use SDSS
     if file == '':
         _json = get_action(**{'target_id': target_id})
         _ra, _dec = _json['ra'], _json['dec']
-        file = get_finder_chart(**{'ra': _ra, 'dec': _dec})
+        file = get_finder_chart(**{'ra': _ra, 'dec': _dec, 'log': log})
+        file = jpg_to_png(file, log)
 
     # convert to png (if required)
     elif file.endswith('fits') or file.endswith('fits.gz'):
-        file = fits_to_png(file, verbose)
-
-    _img = open(file, 'rb')
+        file = fits_to_png(file, log)
 
     # execute
+    _img = open(os.path.basename(file), 'rb')
     _data, _files, _req = {'type': 'finding_chart', 'token': token, 'catalog_id': str(catalog_id),
-                           'program_id': str(program_id), 'target_id': str(target_id)}, \
-                          {'finding_chart_file': _img}, None
+                           'program_id': str(program_id), 'target_id': str(target_id),
+                           'findingchartfilename': os.path.basename(file)}, {'finding_chart_file': _img}, None
+    if log:
+        log.info(f"file={file}")
+        log.info(f"sending {_data} to {MMT_URL}/{target_id}/")
+        log.info(f"sending {_img} to {MMT_URL}/{target_id}/")
     try:
-        if verbose:
-            print(f"{_isot}> upload_action() sends {_data} to {MMT_URL}/{target_id}")
-            print(f"{_isot}> upload_action() sends {_img} to {MMT_URL}/{target_id}")
-        _req = requests.post(url=f'{MMT_URL}/{target_id}', files=_files, data=_data)
+        _req = requests.put(url=f'{MMT_URL}/{target_id}/', files=_files, data=_data)
     except Exception as _e:
-        if verbose:
-            print(f"failed to complete request, _req={_req}, error={_e}")
+        if log:
+            log.error(f"failed to complete UPLOAD request, _req={_req}, error={_e}")
     else:
-        return parse_response(_req=_req, _verbose=verbose, _isot=_isot)
+        return parse_response(_req=_req, _log=log)
 
 
 # +
@@ -283,7 +274,7 @@ HTTP_ACTIONS = {'DELETE': delete_action, 'GET': get_action, 'POST': post_action,
 # -
 # noinspection PyBroadException
 def mmt_target(action='GET', catalog_id=MMT_CATALOG_ID, file='', payload='',
-               program_id=MMT_PROGRAM_ID, target_id=MMT_TARGET_ID, token=MMT_TOKEN, verbose=False):
+               program_id=MMT_PROGRAM_ID, target_id=MMT_TARGET_ID, token=MMT_TOKEN, log=None):
 
     # set variable(s)
     _action = HTTP_ACTIONS.get(action.upper(), None)
@@ -296,12 +287,12 @@ def mmt_target(action='GET', catalog_id=MMT_CATALOG_ID, file='', payload='',
     _program_id = program_id if (isinstance(program_id, int) and program_id > 0) else MMT_PROGRAM_ID
     _target_id = target_id if (isinstance(target_id, int) and target_id > 0) else MMT_TARGET_ID
     _token = token if (isinstance(token, str) and token.strip() != '') else MMT_TOKEN
-    _verbose = verbose if isinstance(verbose, bool) else False
+    log = log if isinstance(log, logging.Logger) else None
 
     # execute
     if _action is not None:
         _action(**{'action': action.upper(), 'catalog_id': _catalog_id, 'file': _file, 'payload': _payload,
-                   'program_id': _program_id, 'target_id': _target_id, 'token': _token, 'verbose': _verbose})
+                   'program_id': _program_id, 'target_id': _target_id, 'token': _token, 'log': log})
 
 
 # +
@@ -324,7 +315,9 @@ if __name__ == '__main__':
     # get command line argument(s)
     args = _p.parse_args()
 
+    # get logger (if required)
+    _log = Logger('MMT').logger if bool(args.verbose) else None
+
     # execute
     mmt_target(action=args.action, catalog_id=int(args.catalog_id), file=args.file, payload=args.payload,
-               program_id=int(args.program_id), target_id=int(args.target_id), token=args.token,
-               verbose=bool(args.verbose))
+               program_id=int(args.program_id), target_id=int(args.target_id), token=args.token, log=_log)
