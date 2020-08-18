@@ -1,40 +1,25 @@
 # MMT Target of Opportunity
 
 ```bash
- % source <mmt-code-path>/etc/MMT.sh <mmt-code-path>
- ```
+ % source <mmt-code-path>/etc/MMT.sh <mmt-code-path> load
+```
 
  - \<base\>: https://scheduler.mmto.arizona.edu/APIv2/catalogTarget/
 
  - \<token\>: ?token=YOUR_SECRET_TOKEN
 
-## Delete Target
-HTTP action: DELETE, Route: \<base\>/\<target_id\>\<token\>
+NB: You must copy `mmt_token.template.py` to `mmt_token.py` and edit the latter
+file for your access credentials!
 
- % python3 mmt.py --action=DELETE --target_id=6221 --verbose
+## Example scripts
 
-## Get Target
-HTTP action: GET, Route: \<base\>/\<target_id\>\<token\>
-
- % python3 mmt.py --action=GET --target_id=6221 --verbose
-
-## Create New Target
-HTTP action: POST, Route: \<base\>/\<token\>
-
-TBD % python3 mmt.py --action=POST --verbose
-
-## Update Target
-HTTP action: PUT, Route: \<base\>/\<target_id\>\<token\>
-
- % python3 mmt.py --action=PUT --payload='{"filter": "r", "visits": 3}' --target_id=6221 --verbose
-
-## Upload Finding Chart
-HTTP action: POST, Route: \<base\>/\<target_id\>\<token\>
-
- % python3 MMT.py --action=UPLOAD --target_id=6238 --file=M31.png --program_id=997 --catalog_id=486 --verbose
+Check out the `<mmt-code-path>/etc` sub-directory for examples of how to
+use the code for delete, get, post, put and upload operations. For new
+targets of opportunity, you would execute a POST command to set the initial
+target and then an UPLOAD command to attach a finder chart.
 
 --------------------------------------
 
-Last Modified: 20200714
+Last Modified: 20200818
 
 Last Author: Phil Daly (pndaly@arizona.edu)
