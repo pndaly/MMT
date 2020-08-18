@@ -22,8 +22,8 @@ import requests
 # +
 # constant(s)
 # -
-ASTROPLAN_IERS_URL = 'ftp://cddis.gsfc.nasa.gov/pub/products/iers/finals2000A.all'
-ASTROPLAN_IERS_URL_ALTERNATE = 'https://datacenter.iers.org/data/9/finals2000A.all'
+ASTROPLAN_IERS_URL = 'https://datacenter.iers.org/data/9/finals2000A.all'
+ASTROPLAN_IERS_URL_ALTERNATE = 'ftp://cddis.gsfc.nasa.gov/pub/products/iers/finals2000A.all'
 HTTP_CODES = {100: "Continue", 101: "Switching Protocols", 102: "Processing (WebDAV)",
               200: "OK", 201: "Created", 202: "Accepted", 203: "Non-Authoritative Information",
               204: "No Content", 205: "Reset Content", 206: "Partial Content", 207: "Multi-Status (WebDAV)",
@@ -48,7 +48,6 @@ HTTP_CODES = {100: "Continue", 101: "Switching Protocols", 102: "Processing (Web
               509: "Bandwidth Limit Exceeded (Apache)", 510: "Not Extended", 511: "Network Authentication Required"}
 HTTP_MAX_CODE = max([int(_k) for _k in HTTP_CODES])
 HTTP_MIN_CODE = min([int(_k) for _k in HTTP_CODES])
-
 MMT_JSON_KEYS = ('centralwavelength', 'dec', 'dec_decimal', 'details', 'disabled', 'dithersize', 'epoch', 
                  'exposuretime', 'exposuretimecompleted', 'exposuretimeremaining', 'exposuretimeremainingformatted', 
                  'filter', 'findingchartfilename', 'gain', 'grating', 'grism', 'id', 'instrumentid', 'iscomplete', 
@@ -65,13 +64,21 @@ MMT_LOG_FIL_FMT = \
     '%(asctime)-20s %(levelname)-9s %(filename)-15s %(funcName)-15s line:%(lineno)-5d Message: %(message)s'
 MMT_LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 MMT_LOG_MAX_BYTES = 9223372036854775807
-MMT_NULL_IMAGING = {_k: None for _k in MMT_JSON_KEYS}
-MMT_NULL_SPECTROSCOPY = {_k: None for _k in MMT_JSON_KEYS}
-MMT_REQUIRED_KEYS = ('dec', 'objectid', 'observationtype', 'epoch', 'exposuretime', 'numberexposures', 'magnitude', 'ra')
+
 SDSS_URL = 'http://skyserver.sdss.org/dr16/SkyServerWS/ImgCutout/getjpeg'
 
-DEC_PATTERN = '^[+-]?[0-8]{1}[0-9]{1}:[0-5]{1}[0-9]{1}:[0-5]{1}[0-9]{1}'
-RA_PATTERN = '^([0-1]{1}[0-9]{1}|2[0-3]{1}):[0-5]{1}[0-9]{1}:[0-5]{1}[0-9]{1}'
+
+# +
+# pattern(s)
+# -
+# +/-dd:mm:ss.ssssss
+DEC_PATTERN = '^[+-]?[0-8][0-9]:[0-5][0-9]:[0-5][0-9](\.[0-9]*)?'
+# YYYY-MM-DDThh:mm:ss.ssssss
+ISO_PATTERN = '(1[89][0-9]{2}|2[0-9]{3})-(0[13578]-[012][0-9]|0[13578]-3[0-1]|' \
+                  '1[02]-[012][0-9]|1[02]-3[0-1]|02-[012][0-9]|0[469]-[012][0-9]|' \
+                  '0[469]-30|11-[012][0-9]|11-30)[ T](0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\.[0-9]*)?'
+# HH:MM:SS.SSSSSS
+RA_PATTERN = '^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\.[0-9]*)?'
 
 
 # +
@@ -385,7 +392,7 @@ def parse_response(_req=None, _log=None):
                 _json = json.loads(_req.text)
             except:
                 _json = {}
-            if verify_keys(_json, MMT_JSON_KEYS) and verify_keys(_json, MMT_REQUIRED_KEYS):
+            if verify_keys(_json, MMT_JSON_KEYS):
                 if _log:
                     _log.info(f"received (json) {_json}")
                 return _json

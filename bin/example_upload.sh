@@ -1,3 +1,3 @@
 #!/bin/bash
-
-python3 ${MMT_SRC}/mmt.py --action=UPLOAD --target_id=6538 --verbose
+_id=${1:-6621}
+python3 ${MMT_SRC}/mmt.py --action=UPLOAD --targetid=${_id} --verbose
